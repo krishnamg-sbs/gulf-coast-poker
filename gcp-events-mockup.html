@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gulf Coast Poker — Events & Live Updates (Mockup)</title>
+<style>
+  :root{
+    --bg:#06121f; --bg-2:#0a1a2e; --card:#0e2236; --card-2:#132c44;
+    --line:#1d3b56; --teal:#5fd4cc; --teal-dim:#3fa9a2; --blue:#4a9fd4; --blue-2:#3a7fb0;
+    --txt:#eaf2f8; --muted:#8fa9bd; --red:#e0443e; --gold:#e8b84b; --green:#46c08a;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+  body{background:#020a12;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;color:var(--txt);display:flex;flex-direction:column;align-items:center;min-height:100vh;padding:24px 12px 60px;gap:14px}
+  .intro{max-width:760px;text-align:center;color:#9fb4c6}
+  .intro h1{color:#fff;font-size:20px;margin-bottom:6px;letter-spacing:.3px}
+  .intro p{font-size:13px;line-height:1.5}
+  .mode-switch{display:flex;gap:8px;margin:4px 0}
+  .mode-switch button{background:var(--card);color:var(--muted);border:1px solid var(--line);padding:8px 16px;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer}
+  .mode-switch button.on{background:linear-gradient(180deg,var(--blue),var(--blue-2));color:#fff;border-color:transparent}
+  .phone{width:390px;max-width:100%;height:780px;background:var(--bg);border-radius:38px;border:10px solid #11151c;position:relative;overflow:hidden;box-shadow:0 30px 80px rgba(0,0,0,.6);display:flex;flex-direction:column}
+  .notch{position:absolute;top:0;left:50%;transform:translateX(-50%);width:150px;height:26px;background:#11151c;border-radius:0 0 16px 16px;z-index:50}
+  .appbar{background:var(--bg-2);border-bottom:1px solid var(--line);padding:30px 16px 10px;display:flex;align-items:center;gap:10px;flex-shrink:0;z-index:20}
+  .logo{display:flex;align-items:center;gap:8px}
+  .fleur{width:26px;height:26px;flex-shrink:0}
+  .logo b{font-size:15px;font-weight:800;line-height:1;letter-spacing:.5px}
+  .logo b span{color:var(--teal)}
+  .appbar .back{font-size:22px;color:var(--teal);cursor:pointer;line-height:1;padding-right:2px}
+  .appbar .spacer{flex:1}
+  .appbar .live-dot{font-size:10px;font-weight:700;color:#fff;background:var(--red);padding:3px 8px;border-radius:4px;letter-spacing:.5px}
+  .searchwrap{padding:10px 14px;background:var(--bg-2);border-bottom:1px solid var(--line);flex-shrink:0}
+  .search{display:flex;align-items:center;gap:8px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:9px 12px}
+  .search svg{flex-shrink:0}
+  .search input{background:none;border:none;color:var(--txt);font-size:14px;width:100%;outline:none}
+  .search input::placeholder{color:var(--muted)}
+  .scroll{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch}
+  .scroll::-webkit-scrollbar{width:0}
+  .section-label{padding:14px 16px 6px;font-size:11px;font-weight:700;letter-spacing:1.2px;color:var(--muted)}
+  .evcard{margin:8px 14px;background:var(--card);border:1px solid var(--line);border-radius:16px;overflow:hidden;cursor:pointer;transition:transform .12s,border-color .12s}
+  .evcard:active{transform:scale(.985)}
+  .evcard .banner{height:84px;position:relative;display:flex;align-items:center;padding:0 16px;gap:12px}
+  .evcard .banner .badge{width:46px;height:46px;border-radius:10px;background:rgba(255,255,255,.10);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+  .evcard .banner h3{font-size:16px;font-weight:800;line-height:1.15}
+  .pill{position:absolute;top:10px;right:12px;font-size:9px;font-weight:800;letter-spacing:.6px;padding:3px 8px;border-radius:20px}
+  .pill.live{background:var(--red);color:#fff}
+  .pill.final{background:#24455f;color:var(--teal)}
+  .pill.upcoming{background:#3a3320;color:var(--gold)}
+  .evcard .meta{padding:11px 16px;display:flex;flex-direction:column;gap:5px}
+  .evcard .row{display:flex;justify-content:space-between;align-items:center;font-size:12px;color:var(--muted)}
+  .evcard .row .host b{color:var(--txt);font-weight:600}
+  .evcard .row .count{color:var(--teal);font-weight:700}
+  .update{display:flex;gap:12px;padding:4px 14px 0}
+  .tl{display:flex;flex-direction:column;align-items:center;flex-shrink:0;width:42px;padding-top:4px}
+  .tl .time{font-size:10px;color:var(--muted);text-align:center;line-height:1.25}
+  .tl .dot{width:11px;height:11px;border-radius:50%;background:var(--teal);margin:6px 0;box-shadow:0 0 0 3px rgba(95,212,204,.15)}
+  .tl .line{flex:1;width:2px;background:var(--line)}
+  .ucard{flex:1;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:13px 14px 14px;margin-bottom:14px}
+  .ucard .level{font-size:10px;font-weight:700;letter-spacing:.5px;color:var(--gold);margin-bottom:6px}
+  .ucard h4{font-size:15px;font-weight:800;line-height:1.25;margin-bottom:4px}
+  .ucard .author{font-size:11px;color:var(--muted);margin-bottom:9px}
+  .ucard p{font-size:13px;line-height:1.55;color:#cfe0ec;margin-bottom:9px}
+  .video{position:relative;border-radius:10px;overflow:hidden;height:158px;display:flex;align-items:center;justify-content:center;margin-bottom:10px;border:1px solid var(--line)}
+  .video .play{width:50px;height:50px;border-radius:50%;background:rgba(255,255,255,.92);display:flex;align-items:center;justify-content:center;z-index:2}
+  .video .play:after{content:"";border-left:16px solid #06121f;border-top:10px solid transparent;border-bottom:10px solid transparent;margin-left:4px}
+  .video .tag{position:absolute;bottom:8px;left:8px;background:rgba(0,0,0,.6);font-size:10px;padding:3px 7px;border-radius:5px;color:#fff;z-index:2}
+  .chips{background:var(--bg-2);border-radius:10px;padding:9px 11px;border:1px solid var(--line)}
+  .chips .ch{display:flex;justify-content:space-between;font-size:12px;padding:3px 0}
+  .chips .ch b{color:var(--teal);font-weight:700;font-variant-numeric:tabular-nums}
+  .chips .ch.out b{color:var(--red)}
+  .cards-played{display:flex;gap:5px;margin-bottom:9px;flex-wrap:wrap}
+  .pc{background:#fff;color:#111;border-radius:4px;font-size:12px;font-weight:700;padding:3px 6px;min-width:24px;text-align:center}
+  .pc.r{color:#d11}
+  .react{display:flex;gap:14px;margin-top:11px;padding-top:10px;border-top:1px solid var(--line);font-size:12px;color:var(--muted)}
+  .react span{display:flex;align-items:center;gap:5px;cursor:pointer}
+  .loader{text-align:center;padding:18px;color:var(--muted);font-size:12px}
+  .spinner{width:18px;height:18px;border:2px solid var(--line);border-top-color:var(--teal);border-radius:50%;display:inline-block;animation:spin .8s linear infinite;vertical-align:middle;margin-right:7px}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .fab{position:absolute;bottom:22px;right:18px;width:56px;height:56px;border-radius:50%;background:linear-gradient(180deg,var(--blue),var(--blue-2));display:flex;align-items:center;justify-content:center;font-size:30px;color:#fff;box-shadow:0 8px 22px rgba(58,127,176,.5);cursor:pointer;z-index:40;border:none}
+  .sheet-mask{position:absolute;inset:0;background:rgba(0,0,0,.55);z-index:45;display:none;align-items:flex-end}
+  .sheet-mask.show{display:flex}
+  .sheet{width:100%;background:var(--bg-2);border-radius:20px 20px 0 0;border-top:1px solid var(--line);padding:16px 16px 22px;max-height:88%;overflow-y:auto;animation:up .25s ease}
+  @keyframes up{from{transform:translateY(40px);opacity:.4}to{transform:translateY(0);opacity:1}}
+  .sheet .grab{width:40px;height:4px;background:var(--line);border-radius:3px;margin:0 auto 14px}
+  .sheet h3{font-size:16px;margin-bottom:14px}
+  .field{margin-bottom:13px}
+  .field label{display:block;font-size:11px;font-weight:700;letter-spacing:.4px;color:var(--muted);margin-bottom:6px}
+  .field input,.field textarea{width:100%;background:var(--card);border:1px solid var(--line);border-radius:10px;padding:11px 12px;color:var(--txt);font-size:14px;font-family:inherit;outline:none}
+  .field textarea{resize:none;height:86px;line-height:1.5}
+  .attach{display:flex;gap:9px}
+  .attach .ab{flex:1;background:var(--card);border:1px dashed var(--line);border-radius:10px;padding:14px 8px;text-align:center;font-size:11px;color:var(--muted);cursor:pointer}
+  .attach .ab svg{display:block;margin:0 auto 5px}
+  .crosspost{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:6px 12px}
+  .cp{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--line);font-size:13px}
+  .cp:last-child{border-bottom:none}
+  .cp .l{display:flex;align-items:center;gap:9px}
+  .cp .ic{width:26px;height:26px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:#fff;flex-shrink:0}
+  .cp small{display:block;color:var(--muted);font-size:10px;font-weight:400}
+  .tg{width:42px;height:24px;border-radius:14px;background:var(--line);position:relative;cursor:pointer;flex-shrink:0;transition:background .15s}
+  .tg:after{content:"";position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:#fff;transition:left .15s}
+  .tg.on{background:var(--teal-dim)}
+  .tg.on:after{left:21px}
+  .post-btn{width:100%;background:linear-gradient(180deg,var(--blue),var(--blue-2));border:none;color:#fff;font-size:15px;font-weight:700;padding:14px;border-radius:12px;margin-top:6px;cursor:pointer}
+  .admin-banner{background:linear-gradient(90deg,#1b3a2c,#16302a);border-bottom:1px solid #265c45;color:var(--green);font-size:11px;font-weight:700;text-align:center;padding:6px;letter-spacing:.5px}
+  .hidden{display:none !important}
+  .toast{position:absolute;bottom:90px;left:50%;transform:translateX(-50%);background:var(--green);color:#04140d;font-size:13px;font-weight:700;padding:11px 18px;border-radius:10px;z-index:60;opacity:0;transition:opacity .25s;white-space:nowrap}
+  .toast.show{opacity:1}
+  .empty{text-align:center;color:var(--muted);font-size:13px;padding:40px 20px}
+</style>
+</head>
+<body>
+
+<div class="intro">
+  <h1>Gulf Coast Poker — On-Site Events & Live Updates</h1>
+  <p>App-first concept using GCP's real event lineup. Fans browse a searchable archive and read a live, infinite-scroll updates feed (no Facebook detour). Admins post updates with video + highlights and cross-post to GCP and client channels. Toggle modes below.</p>
+</div>
+
+<div class="mode-switch">
+  <button id="mPublic" class="on" onclick="setMode('public')">👁 Public view</button>
+  <button id="mAdmin" onclick="setMode('admin')">✎ Admin mode</button>
+</div>
+
+<div class="phone">
+  <div class="notch"></div>
+  <div id="adminBanner" class="admin-banner hidden">ADMIN MODE — you can post & cross-post updates</div>
+
+  <div class="appbar">
+    <span id="backBtn" class="back hidden" onclick="goList()">‹</span>
+    <div class="logo">
+      <svg class="fleur" viewBox="0 0 24 24" fill="#fff"><path d="M12 2c-1 2.4-1 4 0 5.2C13 6 13 4.4 12 2zM12 7.5c-2.2 0-4 1.8-4 4 0 2 1.6 3.4 3 4.2-1.2.2-3-.2-4.2-1.6.2 2.6 2 4.4 4 4.6L10 22h4l-.8-3.3c2-.2 3.8-2 4-4.6-1.2 1.4-3 1.8-4.2 1.6 1.4-.8 3-2.2 3-4.2 0-2.2-1.8-4-4-4z"/></svg>
+      <b>GULF&nbsp;COAST<br><span>POKER</span></b>
+    </div>
+    <span class="spacer"></span>
+    <span id="liveTag" class="live-dot">LIVE</span>
+  </div>
+
+  <div class="searchwrap">
+    <div class="search">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#8fa9bd" stroke-width="2"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.5" y2="16.5"/></svg>
+      <input id="searchInput" placeholder="Search events, players, hands…" oninput="onSearch()">
+    </div>
+  </div>
+
+  <div class="scroll" id="scroll">
+    <div id="listView">
+      <div class="section-label" id="listLabel">GCP 2026 TOUR EVENTS</div>
+      <div id="eventList"></div>
+    </div>
+    <div id="detailView" class="hidden">
+      <div id="updateFeed"></div>
+      <div class="loader" id="feedLoader"><span class="spinner"></span>Loading more updates…</div>
+    </div>
+  </div>
+
+  <button id="fab" class="fab hidden" onclick="openSheet()">+</button>
+
+  <div class="sheet-mask" id="sheetMask" onclick="if(event.target===this)closeSheet()">
+    <div class="sheet">
+      <div class="grab"></div>
+      <h3 id="sheetTitle">Post update</h3>
+      <div class="field"><label>HEADLINE</label><input id="fTitle" placeholder="e.g. Boudreaux eliminated in 3rd ($42,100)"></div>
+      <div class="field"><label>UPDATE</label><textarea id="fBody" placeholder="Describe the hand, chip counts, the moment…"></textarea></div>
+      <div class="field">
+        <label>MEDIA</label>
+        <div class="attach">
+          <div class="ab" onclick="flash('🎬 Video attached')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#5fd4cc" stroke-width="2"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>Video</div>
+          <div class="ab" onclick="flash('📷 Photo attached')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#5fd4cc" stroke-width="2"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="12" cy="12" r="3"/></svg>Photo</div>
+          <div class="ab" onclick="flash('🃏 Chip counts added')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#5fd4cc" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M12 7v10M9 12h6"/></svg>Chips</div>
+        </div>
+      </div>
+      <div class="field">
+        <label>CROSS-POST TO</label>
+        <div class="crosspost">
+          <div class="cp"><div class="l"><div class="ic" style="background:#1877f2">f</div><div>GCP Facebook<small>Gulf Coast Poker Tour group</small></div></div><div class="tg on" onclick="this.classList.toggle('on')"></div></div>
+          <div class="cp"><div class="l"><div class="ic" style="background:#111">𝕏</div><div>GCP on X<small>@gulfcoastpoker</small></div></div><div class="tg" onclick="this.classList.toggle('on')"></div></div>
+          <div class="cp"><div class="l"><div class="ic" style="background:#16466b">7C</div><div>7 Clans Casino site<small>Client embed feed</small></div></div><div class="tg on" onclick="this.classList.toggle('on')"></div></div>
+          <div class="cp"><div class="l"><div class="ic" style="background:#7a3a16">HT</div><div>Horseshoe Tunica site<small>Client embed feed</small></div></div><div class="tg" onclick="this.classList.toggle('on')"></div></div>
+        </div>
+      </div>
+      <button class="post-btn" onclick="publish()">Publish update</button>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+</div>
+
+<div class="intro" style="font-size:12px;opacity:.7">Tap any event to open its live updates feed · scroll to load more · use the + button in Admin mode to post</div>
+
+<script>
+/* ---------- EVENTS (GCP tour lineup from the site dropdown) ---------- */
+var events = [
+  {id:'7clans', title:'7 Clans Poker Cup', date:'Jun 5 – Jun 9, 2026', venue:'7 Clans Casino, Newkirk OK', host:'Liam Gannon', status:'live', color:'#16466b', tag:'7C'},
+  {id:'milly', title:'Milly In Philly', date:'May 28 – Jun 1, 2026', venue:'Live! Casino, Philadelphia PA', host:'Sam Cosby', status:'final', color:'#3a2a5e', tag:'MP'},
+  {id:'lastate', title:'Louisiana State Championship', date:'May 12 – May 18, 2026', venue:'Coushatta, Kinder LA', host:'Ryan Lashmar', status:'final', color:'#1d4d3a', tag:'LA'},
+  {id:'tunica', title:'Horseshoe Tunica', date:'Jun 18 – Jun 23, 2026', venue:'Horseshoe, Tunica MS', host:'TBD', status:'upcoming', color:'#7a3a16', tag:'HT'},
+  {id:'ntx', title:'North Texas Cup', date:'Jul 2 – Jul 7, 2026', venue:'WinStar, Thackerville OK', host:'TBD', status:'upcoming', color:'#5e1d2a', tag:'NT'},
+  {id:'heater', title:'The Heater', date:'Jul 20 – Jul 26, 2026', venue:'Golden Nugget, Lake Charles LA', host:'TBD', status:'upcoming', color:'#5e4a16', tag:'TH'},
+  {id:'pokergras', title:'Poker Gras', date:'Aug 8 – Aug 16, 2026', venue:'Harrah’s, New Orleans LA', host:'TBD', status:'upcoming', color:'#16466b', tag:'PG'}
+];
+var statusLabel = {live:'LIVE', final:'FINAL', upcoming:'UPCOMING'};
+
+/* ---------- MOCK UPDATES PER EVENT ---------- */
+var updatesByEvent = {
+  '7clans':[
+    {time:'4:12 PM', level:'Level 32 · 150K/300K', title:'Boudreaux ships a monster to take the chip lead', author:'Liam Gannon', body:'Tony Boudreaux opened to 750,000 on the button and Marie LeBlanc defended. On a K♣ 9♦ 4♠ flop, LeBlanc check-called 500,000. The 7♥ turn went check-check, and on the 2♦ river Boudreaux fired 2,000,000 to take it down and surge into the lead.', cards:['K♣','9♦','4♠','7♥','2♦'], chips:[['Tony Boudreaux','11,200,000'],['Marie LeBlanc','6,800,000']], video:true, vtag:'Hand of the night', likes:48, comments:12},
+    {time:'3:55 PM', level:'Level 31 · 125K/250K', title:'Double for the short stack on the FT bubble', author:'Liam Gannon', body:'All in pre for 2.1M with A♠Q♠ against pocket nines — board ran out Q♦ J♣ 5♥ Q♣ 8♠ for trips and a clean double.', cards:['Q♦','J♣','5♥','Q♣','8♠'], chips:[['Doubled up','4,400,000']], video:false, likes:21, comments:3},
+    {time:'3:30 PM', level:'Level 31 · 125K/250K', title:'Down to the official final table', author:'Liam Gannon', body:'Nine players remain and have bagged for a short break before the FT redraw. Average stack is just over 30 big blinds.', cards:[], chips:[['Chip leader','9,900,000'],['Field avg','7,500,000']], video:false, likes:34, comments:8},
+    {time:'2:58 PM', level:'Level 30 · 100K/200K', title:'Set over set cooler on the stone bubble', author:'Liam Gannon', body:'Bottom set got it in on the flop drawing nearly dead and could not catch up. A brutal way to bust right before the money jump.', cards:['8♥','8♦','3♣','J♠','2♦'], chips:[['Eliminated','—']], video:true, vtag:'Bubble hand', likes:67, comments:19},
+    {time:'1:40 PM', level:'Level 28 · 60K/120K', title:'Cards back in the air after dinner', author:'Liam Gannon', body:'14 players remaining, two eliminations from the official final table.', cards:[], chips:[], video:false, likes:9, comments:1}
+  ],
+  'milly':[
+    {time:'9:48 PM', level:'Final hand', title:'Sokolov wins Milly In Philly for $312,000', author:'Sam Cosby', body:'Heads-up ended when Dmitri Sokolov’s A♦K♣ held against Q♠J♠ on a 10♥ 7♣ 2♦ 8♠ 4♥ runout. After a five-hour duel, Sokolov takes the title and the trophy.', cards:['10♥','7♣','2♦','8♠','4♥'], chips:[['Dmitri Sokolov','CHAMPION'],['Eli Carter','2nd — $193,500']], video:true, vtag:'Winning hand', likes:142, comments:38},
+    {time:'9:10 PM', level:'Level 38 · 400K/800K', title:'Heads-up battle stretches past five hours', author:'Sam Cosby', body:'The lead has changed six times. Both players are deep and neither is giving an inch. The rail is loud.', cards:[], chips:[['Sokolov','24,000,000'],['Carter','21,000,000']], video:false, likes:55, comments:9},
+    {time:'7:32 PM', level:'Level 36 · 300K/600K', title:'Carter rivers a flush to send out 3rd place', author:'Sam Cosby', body:'A backdoor heart draw got there on the river to bust the short stack in third and set the heads-up match.', cards:['J♥','9♥','3♠','K♣','6♥'], chips:[['3rd place','$132,000']], video:true, vtag:'Setting up HU', likes:71, comments:14},
+    {time:'6:05 PM', level:'Level 34 · 200K/400K', title:'Four-handed and the pay jumps are huge', author:'Sam Cosby', body:'Players are tightening up with $60K between each remaining pay spot.', cards:[], chips:[['Avg stack','15,000,000']], video:false, likes:18, comments:2}
+  ],
+  'lastate':[
+    {time:'11:20 PM', level:'Final hand', title:'Hometown hero Thibodeaux takes the Louisiana State title', author:'Ryan Lashmar', body:'Lafayette’s own Beau Thibodeaux completed a wire-to-wire final table, finishing it with pocket kings holding against A♣Q♦. The Coushatta crowd erupted.', cards:['K♠','K♦','7♣','4♠','9♦'], chips:[['Beau Thibodeaux','CHAMPION — $241,000'],['Runner-up','$156,000']], video:true, vtag:'Champion crowned', likes:205, comments:54},
+    {time:'10:02 PM', level:'Level 35 · 250K/500K', title:'Three-handed in Kinder', author:'Ryan Lashmar', body:'Thibodeaux holds a commanding lead with three left. A min-cash here is already a career score for two of them.', cards:[], chips:[['Thibodeaux','38,000,000'],['Field','19,000,000']], video:false, likes:44, comments:7},
+    {time:'8:40 PM', level:'Level 33 · 200K/400K', title:'Aces cracked to thin the final table', author:'Ryan Lashmar', body:'A♠A♥ ran into a flopped set of fives and could not improve. Six remain.', cards:['5♣','5♦','J♠','2♥','Q♣'], chips:[['Eliminated','7th — $48,200']], video:true, vtag:'Cooler', likes:63, comments:16},
+    {time:'7:15 PM', level:'Level 31 · 125K/250K', title:'Final table set at Coushatta', author:'Ryan Lashmar', body:'Nine players bagged and tagged for the official final table. Three locals still in contention.', cards:[], chips:[], video:false, likes:29, comments:4}
+  ]
+};
+
+/* events with no scripted updates fall back to this generic pool */
+var genericPool = [
+  {time:'2:20 PM', level:'Level 12 · 2K/4K', title:'Registration closed — field size locked', author:'GCP Reporting', body:'Late registration has closed. The prize pool and payouts will be confirmed shortly.', cards:[], chips:[['Entries','312'],['Players left','188']], video:false, likes:12, comments:1},
+  {time:'1:05 PM', level:'Level 8 · 800/1.6K', title:'Early chip leader emerges', author:'GCP Reporting', body:'An early run of pots has one player well clear of the field heading into the dinner break.', cards:['A♠','K♠','Q♥','J♣','9♦'], chips:[['Leader','185,000']], video:false, likes:8, comments:0},
+  {time:'11:30 AM', level:'Level 1 · 100/200', title:'Cards are in the air', author:'GCP Reporting', body:'Day 1 is underway. Follow along here for live updates, chip counts, and video highlights all event long.', cards:[], chips:[], video:true, vtag:'Day 1 kickoff', likes:21, comments:5}
+];
+
+var mode='public', currentEvent=null, loadedCount=0;
+
+function feedFor(id){ return updatesByEvent[id] || genericPool; }
+
+/* ---------- LIST ---------- */
+function renderList(filter){
+  filter = filter || '';
+  var wrap=document.getElementById('eventList');
+  var f=filter.trim().toLowerCase();
+  var matches=events.filter(function(e){
+    if(!f) return true;
+    var hay=(e.title+' '+e.host+' '+e.status+' '+e.venue).toLowerCase();
+    return hay.indexOf(f)>-1;
+  });
+  document.getElementById('listLabel').textContent = f ? (matches.length+' RESULT'+(matches.length===1?'':'S')) : 'GCP 2026 TOUR EVENTS';
+  if(!matches.length){ wrap.innerHTML='<div class="empty">No events match “'+filter+'”.</div>'; return; }
+  wrap.innerHTML=matches.map(function(e){
+    var count=feedFor(e.id);
+    var cnt = e.status==='upcoming' ? '—' : (count.length*7)+' updates';
+    return '<div class="evcard" onclick="openEvent(\''+e.id+'\')">'
+      +'<div class="banner" style="background:linear-gradient(120deg,#0d2740,'+e.color+')">'
+      +'<div class="badge"><svg width="22" height="22" viewBox="0 0 24 24" fill="#fff" opacity=".85"><path d="M12 2c-1 2.4-1 4 0 5.2C13 6 13 4.4 12 2zM12 7.5c-2.2 0-4 1.8-4 4 0 2 1.6 3.4 3 4.2-1.2.2-3-.2-4.2-1.6.2 2.6 2 4.4 4 4.6L10 22h4l-.8-3.3c2-.2 3.8-2 4-4.6-1.2 1.4-3 1.8-4.2 1.6 1.4-.8 3-2.2 3-4.2 0-2.2-1.8-4-4-4z"/></svg></div>'
+      +'<h3>'+e.title+'</h3>'
+      +'<span class="pill '+e.status+'">'+statusLabel[e.status]+'</span></div>'
+      +'<div class="meta">'
+      +'<div class="row"><span>'+e.date+'</span><span class="count">'+cnt+'</span></div>'
+      +'<div class="row"><span class="host">'+e.venue+'</span><span>'+(e.status==='upcoming'?'Schedule ›':'View feed ›')+'</span></div>'
+      +'</div></div>';
+  }).join('');
+}
+
+/* ---------- UPDATE RENDER ---------- */
+function updateHTML(u, last){
+  var cards = u.cards.length ? '<div class="cards-played">'+u.cards.map(function(c){return '<span class="pc '+(/[♥♦]/.test(c)?'r':'')+'">'+c+'</span>';}).join('')+'</div>' : '';
+  var video = u.video ? '<div class="video" style="background:linear-gradient(120deg,#123,#0a1f30)"><div class="play"></div><span class="tag">▶ '+(u.vtag||'GCP video')+'</span></div>' : '';
+  var chips = u.chips.length ? '<div class="chips">'+u.chips.map(function(c){var out=(c[1]==='—'||c[1]==='CHAMPION'||/^[0-9]/.test(c[1])===false&&c[1].indexOf(',')===-1&&c[1]!=='CHAMPION');return '<div class="ch '+(c[1]==='—'?'out':'')+'"><span>'+c[0]+'</span><b>'+(c[1]==='—'?'ELIMINATED':c[1])+'</b></div>';}).join('')+'</div>' : '';
+  return '<div class="update">'
+    +'<div class="tl"><div class="time">'+u.time+'</div><div class="dot"></div><div class="line" style="'+(last?'opacity:0':'')+'"></div></div>'
+    +'<div class="ucard">'
+    +'<div class="level">'+(u.level||'')+'</div>'
+    +'<h4>'+u.title+'</h4>'
+    +'<div class="author">Posted by '+u.author+'</div>'
+    +video
+    +'<p>'+u.body+'</p>'
+    +cards+chips
+    +'<div class="react"><span onclick="like(this)">♥ '+u.likes+'</span><span>💬 '+u.comments+'</span><span style="margin-left:auto">⤷ Share</span></div>'
+    +'</div></div>';
+}
+
+/* ---------- INFINITE SCROLL ---------- */
+function loadMore(){
+  if(!currentEvent) return;
+  var pool=feedFor(currentEvent.id);
+  var feed=document.getElementById('updateFeed');
+  for(var i=0;i<3;i++){
+    var u=pool[loadedCount % pool.length];
+    feed.insertAdjacentHTML('beforeend', updateHTML(u,false));
+    loadedCount++;
+  }
+}
+function onScroll(){
+  if(!currentEvent) return;
+  var s=document.getElementById('scroll');
+  if(s.scrollTop+s.clientHeight >= s.scrollHeight-120){
+    var ldr=document.getElementById('feedLoader');
+    if(loadedCount<21){ ldr.style.display='block'; setTimeout(loadMore,320); }
+    else { ldr.innerHTML='— You have reached the start of this event —'; }
+  }
+}
+
+/* ---------- NAV ---------- */
+function openEvent(id){
+  var e=null; for(var i=0;i<events.length;i++){ if(events[i].id===id) e=events[i]; }
+  if(!e) return;
+  if(e.status==='upcoming'){ flash('🗓 '+e.title+' — schedule (not started)'); return; }
+  currentEvent=e;
+  document.getElementById('listView').classList.add('hidden');
+  document.getElementById('detailView').classList.remove('hidden');
+  document.getElementById('backBtn').classList.remove('hidden');
+  document.getElementById('liveTag').style.display = e.status==='live'?'inline-block':'none';
+  document.getElementById('searchInput').value='';
+  document.getElementById('searchInput').placeholder='Search updates in '+e.title+'…';
+  document.getElementById('sheetTitle').textContent='Post update — '+e.title;
+  document.getElementById('updateFeed').innerHTML='';
+  document.getElementById('feedLoader').innerHTML='<span class="spinner"></span>Loading more updates…';
+  document.getElementById('feedLoader').style.display='block';
+  loadedCount=0; loadMore(); loadMore();
+  document.getElementById('scroll').scrollTop=0;
+}
+function goList(){
+  currentEvent=null;
+  document.getElementById('detailView').classList.add('hidden');
+  document.getElementById('listView').classList.remove('hidden');
+  document.getElementById('backBtn').classList.add('hidden');
+  document.getElementById('liveTag').style.display='inline-block';
+  document.getElementById('searchInput').value='';
+  document.getElementById('searchInput').placeholder='Search events, players, hands…';
+  renderList();
+}
+
+/* ---------- SEARCH ---------- */
+function onSearch(){
+  var q=document.getElementById('searchInput').value;
+  if(!currentEvent){ renderList(q); return; }
+  var feed=document.getElementById('updateFeed');
+  var f=q.trim().toLowerCase();
+  var pool=feedFor(currentEvent.id);
+  if(!f){
+    document.getElementById('feedLoader').style.display='block';
+    loadedCount=0; feed.innerHTML=''; loadMore(); loadMore(); return;
+  }
+  document.getElementById('feedLoader').style.display='none';
+  var matches=pool.filter(function(u){ return (u.title+' '+u.body+' '+u.author).toLowerCase().indexOf(f)>-1; });
+  feed.innerHTML = matches.length ? matches.map(function(u,i){return updateHTML(u,i===matches.length-1);}).join('')
+    : '<div class="empty">No updates match “'+q+'” in this event.</div>';
+}
+
+/* ---------- MODE / SHEET / TOAST ---------- */
+function setMode(m){
+  mode=m;
+  document.getElementById('mPublic').classList.toggle('on',m==='public');
+  document.getElementById('mAdmin').classList.toggle('on',m==='admin');
+  document.getElementById('adminBanner').classList.toggle('hidden',m!=='admin');
+  document.getElementById('fab').classList.toggle('hidden',m!=='admin');
+}
+function openSheet(){ if(!currentEvent){ flash('Open an event first to post'); return; } document.getElementById('sheetMask').classList.add('show'); }
+function closeSheet(){ document.getElementById('sheetMask').classList.remove('show'); }
+function publish(){
+  closeSheet();
+  var t=document.getElementById('fTitle').value || 'New update';
+  var b=document.getElementById('fBody').value || 'Update posted to the GCP live feed.';
+  if(currentEvent){
+    var feed=document.getElementById('updateFeed');
+    feed.insertAdjacentHTML('afterbegin', updateHTML({time:'now',level:currentEvent.title,title:t,author:'You (GCP Admin)',body:b,cards:[],chips:[],video:true,vtag:'Just posted',likes:0,comments:0},false));
+    document.getElementById('scroll').scrollTop=0;
+  }
+  document.getElementById('fTitle').value=''; document.getElementById('fBody').value='';
+  flash('✓ Published + cross-posted');
+}
+function like(el){ var n=parseInt(el.textContent.replace(/[^0-9]/g,''),10)+1; el.innerHTML='♥ '+n; el.style.color='#e0443e'; }
+
+var toastT;
+function flash(msg){
+  var t=document.getElementById('toast');
+  t.textContent=msg; t.classList.add('show');
+  clearTimeout(toastT); toastT=setTimeout(function(){t.classList.remove('show');},1800);
+}
+
+document.getElementById('scroll').addEventListener('scroll',onScroll);
+renderList();
+</script>
+</body>
+</html>
