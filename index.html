@@ -111,12 +111,11 @@
 
 <div class="intro">
   <h1>Gulf Coast Poker — On-Site Events & Live Updates</h1>
-  <p>App-first concept using GCP's real event lineup. Fans browse a searchable archive and read a live, infinite-scroll updates feed (no Facebook detour). Admins post updates with video + highlights and cross-post to GCP and client channels. Toggle modes below.</p>
+  <!--<p>App-first concept using GCP's real event lineup. Fans browse a searchable archive and read a live, infinite-scroll updates feed (no Facebook detour). Admins post updates with video + highlights and cross-post to GCP and client channels. Toggle modes below.</p>-->
 </div>
 
 <div class="mode-switch">
-  <button id="mPublic" class="on" onclick="setMode('public')">👁 Public view</button>
-  <button id="mAdmin" onclick="setMode('admin')">✎ Admin mode</button>
+  <button id="mAdmin" class="on" onclick="setMode('admin')">✎ Admin mode</button>
 </div>
 
 <div class="phone">
@@ -228,7 +227,7 @@ var genericPool = [
   {time:'11:30 AM', level:'Level 1 · 100/200', title:'Cards are in the air', author:'GCP Reporting', body:'Day 1 is underway. Follow along here for live updates, chip counts, and video highlights all event long.', cards:[], chips:[], video:true, vtag:'Day 1 kickoff', likes:21, comments:5}
 ];
 
-var mode='public', currentEvent=null, loadedCount=0;
+var mode='admin', currentEvent=null, loadedCount=0;
 
 function feedFor(id){ return updatesByEvent[id] || genericPool; }
 
@@ -348,7 +347,6 @@ function onSearch(){
 /* ---------- MODE / SHEET / TOAST ---------- */
 function setMode(m){
   mode=m;
-  document.getElementById('mPublic').classList.toggle('on',m==='public');
   document.getElementById('mAdmin').classList.toggle('on',m==='admin');
   document.getElementById('adminBanner').classList.toggle('hidden',m!=='admin');
   document.getElementById('fab').classList.toggle('hidden',m!=='admin');
@@ -377,6 +375,7 @@ function flash(msg){
 }
 
 document.getElementById('scroll').addEventListener('scroll',onScroll);
+setMode('admin');
 renderList();
 </script>
 </body>
